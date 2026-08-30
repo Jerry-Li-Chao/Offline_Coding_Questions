@@ -1,0 +1,7 @@
+# Your local practice data: drafts, notes, submission history.
+# Delete this line if you want your progress tracked in git.
+data/
+
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,1 +1,153 @@
-# Offline_Coding_Questions
+# Offline Coding Questions
+
+A local, no-internet-required practice environment for coding interview questions —
+read the problem, write Python, edit and run test cases, submit against a full
+hidden suite, keep notes, and track every attempt. Everything lives on your
+machine.
+
+Modeled on the NeetCode problem workspace, rebuilt to run with zero network
+access and zero dependencies.
+
+## Running it
+
+```bash
+python3 server.py
+```
+
+Then open <http://127.0.0.1:8777> (the server opens it for you). On macOS you can
+also double-click `start.command` in Finder.
+
+Requirements: **Python 3.8+**. That's it — no `pip install`, no Node, no CDN, no
+network. The server binds to `127.0.0.1` only.
+
+Useful flags:
+
+```bash
+python3 server.py --port 9000 --no-browser
+```
+
+## What it does
+
+| Feature | Notes |
+| --- | --- |
+| **Description tab** | Markdown problem statement with collapsible hints |
+| **Solution tab** | Full editorial, multiple approaches, hidden behind a "show solution" guard so you attempt it first |
+| **Notes tab** | Your own markdown notes, autosaved, with a preview mode |
+| **Submissions tab** | Every submission with verdict, tests passed, runtime and the exact code — reloadable into the editor |
+| **Editor** | Python syntax highlighting, line numbers, smart indent, bracket completion, comment toggle (`⌘/`), undo/redo |
+| **Test Cases** | Add, edit and delete cases inline. Leave *expected* blank to just see what your code returns |
+| **Run** | Executes the visible test cases |
+| **Submit** | Runs the full suite and records the verdict in your history |
+| **Progress** | Solved / attempted status per problem, plus starring |
+
+Keyboard: `⌘↩` run, `⇧⌘↩` submit (`Ctrl` on Windows/Linux).
+
+## Where your data lives
+
+Everything is in a SQLite file at `data/app.db`:
+
+- draft code per problem (autosaved as you type)
+- your notes
+- your custom test cases
+- full submission history with verdicts and code
+
+`data/` is gitignored so your progress stays private. Delete the file to reset;
+back it up to keep your history.
+
+## Adding a problem
+
+Each problem is a folder under `problems/`. Copy `problems/binary-search/` and
+edit four files:
+
+```
+problems/<slug>/
+├── meta.json        signature, test suite, metadata
+├── description.md   the problem statement
+├── solution.md      the editorial
+└── starter.py       the starter code shown in the editor
+```
+
+`meta.json` looks like this:
+
+```jsonc
+{
+  "title": "Binary Search",
+  "difficulty": "Easy",              // Easy | Medium | Hard
+  "topics": ["Binary Search"],
+  "entry": { "class": "Solution", "method": "search" },
+  "params": [                        // order matters: these are the call arguments
+    { "name": "nums", "type": "int[]" },
+    { "name": "target", "type": "int" }
+  ],
+  "returns": { "type": "int" },
+  "compare": "exact",                // exact | unordered | set | float | any_of
+  "timeout_sec": 10,
+  "languages": {
+    "python": {
+      "starter_file": "starter.py",
+      "prelude": "from typing import List\n"   // runs before your code
+    }
+  },
+  "tests": [
+    { "input": { "nums": [-1, 0, 2, 4, 6, 8], "target": 4 },
+      "output": 3,
+      "sample": true },              // sample tests prefill the Test Cases panel
+    { "input": { "nums": { "$py": "list(range(-5000, 5000))" }, "target": 0 },
+      "output": 5000 }               // $py generates large inputs without bloating the file
+  ]
+}
+```
+
+Comparison modes:
+
+| Mode | Use for |
+| --- | --- |
+| `exact` | the default — deep equality |
+| `unordered` | list results where order doesn't matter |
+| `set` | results compared as sets |
+| `float` | numeric results, tolerance `1e-5` |
+| `any_of` | `output` is a list of acceptable answers |
+
+Per-test `"compare"` overrides the problem-level setting, and `"check": false`
+runs a test for its output only, without a verdict.
+
+Restart the server (or just reload the page — problems are read from disk on
+every request) to pick up new problems.
+
+## How it runs your code
+
+`server.py` writes your code and the tests to a temp directory and runs
+`engine/harness.py` in a **separate Python subprocess** with a wall-clock limit
+(`timeout_sec`, default 10s). The harness:
+
+- executes your code with the problem's prelude in scope
+- calls the entry point once per test with deep-copied arguments, so mutating an
+  input can't leak into the next case
+- captures `print` output per test and shows it in the result panel
+- reports syntax errors with your editor's line numbers, and tracebacks trimmed
+  to your own frames
+- flushes results after every test, so a hung test is still identified by name
+
+Your code runs as a normal local Python process with your permissions — the same
+as running `python3 solution.py` yourself. Don't paste in code you wouldn't run
+in a terminal.
+
+## Layout
+
+```
+server.py              stdlib HTTP server + JSON API
+engine/
+├── harness.py         runs in the subprocess; executes and grades
+├── runner.py          spawns the subprocess, enforces the timeout
+├── problems.py        loads problems from disk
+└── store.py           SQLite: drafts, notes, cases, submissions
+problems/<slug>/       problem content
+static/                the UI (vanilla JS, no build step, no dependencies)
+data/app.db            your local progress (gitignored)
+```
+
+## Problems included
+
+| Problem | Difficulty | Topic |
+| --- | --- | --- |
+| Binary Search | Easy | Binary Search |

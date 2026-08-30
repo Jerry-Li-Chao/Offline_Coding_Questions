@@ -1,0 +1,282 @@
+{
+  "slug": "binary-search",
+  "title": "Binary Search",
+  "difficulty": "Easy",
+  "topics": [
+    "Binary Search"
+  ],
+  "source": "LeetCode 704 / NeetCode 150",
+  "entry": {
+    "class": "Solution",
+    "method": "search"
+  },
+  "params": [
+    {
+      "name": "nums",
+      "type": "int[]"
+    },
+    {
+      "name": "target",
+      "type": "int"
+    }
+  ],
+  "returns": {
+    "type": "int"
+  },
+  "compare": "exact",
+  "timeout_sec": 10,
+  "languages": {
+    "python": {
+      "starter_file": "starter.py",
+      "prelude": "from typing import List, Optional, Dict, Set, Tuple\nimport collections, heapq, bisect, math, itertools, functools, re, string, random\nfrom collections import defaultdict, deque, Counter, OrderedDict\n"
+    }
+  },
+  "tests": [
+    {
+      "input": {
+        "nums": [
+          -1,
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "target": 4
+      },
+      "output": 3,
+      "sample": true
+    },
+    {
+      "input": {
+        "nums": [
+          -1,
+          0,
+          2,
+          4,
+          6,
+          8
+        ],
+        "target": 3
+      },
+      "output": -1,
+      "sample": true
+    },
+    {
+      "input": {
+        "nums": [
+          5
+        ],
+        "target": 5
+      },
+      "output": 0,
+      "sample": true
+    },
+    {
+      "input": {
+        "nums": [
+          5
+        ],
+        "target": -5
+      },
+      "output": -1
+    },
+    {
+      "input": {
+        "nums": [
+          1,
+          2
+        ],
+        "target": 1
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "nums": [
+          1,
+          2
+        ],
+        "target": 2
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "nums": [
+          1,
+          2
+        ],
+        "target": 3
+      },
+      "output": -1
+    },
+    {
+      "input": {
+        "nums": [
+          -9,
+          -7,
+          -3,
+          0,
+          1,
+          4,
+          11
+        ],
+        "target": -9
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "nums": [
+          -9,
+          -7,
+          -3,
+          0,
+          1,
+          4,
+          11
+        ],
+        "target": 11
+      },
+      "output": 6
+    },
+    {
+      "input": {
+        "nums": [
+          -9,
+          -7,
+          -3,
+          0,
+          1,
+          4,
+          11
+        ],
+        "target": 0
+      },
+      "output": 3
+    },
+    {
+      "input": {
+        "nums": [
+          -9,
+          -7,
+          -3,
+          0,
+          1,
+          4,
+          11
+        ],
+        "target": 2
+      },
+      "output": -1
+    },
+    {
+      "input": {
+        "nums": [
+          -9,
+          -7,
+          -3,
+          0,
+          1,
+          4,
+          11
+        ],
+        "target": -100
+      },
+      "output": -1
+    },
+    {
+      "input": {
+        "nums": [
+          -9,
+          -7,
+          -3,
+          0,
+          1,
+          4,
+          11
+        ],
+        "target": 100
+      },
+      "output": -1
+    },
+    {
+      "input": {
+        "nums": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "target": 7
+      },
+      "output": 7
+    },
+    {
+      "input": {
+        "nums": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "target": 0
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "nums": {
+          "$py": "list(range(-5000, 5000))"
+        },
+        "target": -5000
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "nums": {
+          "$py": "list(range(-5000, 5000))"
+        },
+        "target": 4999
+      },
+      "output": 9999
+    },
+    {
+      "input": {
+        "nums": {
+          "$py": "list(range(-5000, 5000))"
+        },
+        "target": 0
+      },
+      "output": 5000
+    },
+    {
+      "input": {
+        "nums": {
+          "$py": "list(range(-5000, 5000))"
+        },
+        "target": 5000
+      },
+      "output": -1
+    },
+    {
+      "input": {
+        "nums": {
+          "$py": "list(range(-5000, 5000))"
+        },
+        "target": -9999
+      },
+      "output": -1
+    }
+  ]
+}

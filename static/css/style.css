@@ -294,11 +294,12 @@ body.resizing-v { cursor: row-resize; }
 .tab-panel.active { display: block; }
 
 /* ===================================================================== prose */
-.prose { padding: 20px 24px 60px; max-width: 780px; }
+.prose { padding: 16px 22px 60px; max-width: 780px; }
 .prose h1 { font-size: 21px; margin: 22px 0 10px; }
 .prose h2 { font-size: 17px; margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 .prose h3 { font-size: 14.5px; margin: 20px 0 8px; color: var(--text); }
 .prose p { margin: 10px 0; color: var(--text); }
+.prose > :first-child { margin-top: 0; }
 .prose ul, .prose ol { margin: 10px 0; padding-left: 22px; }
 .prose li { margin: 5px 0; }
 .prose hr { border: 0; border-top: 1px solid var(--border); margin: 22px 0; }
@@ -362,11 +363,11 @@ html[data-theme="dark"] .prose pre { background: #0f1115; }
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 18px 24px 0;
+  padding: 0;
   flex-wrap: wrap;
 }
 .meta-title { font-size: 20px; font-weight: 650; margin: 0; letter-spacing: -.01em; }
-.meta-sub { padding: 6px 24px 0; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.meta-sub { padding: 0; margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .badge {
   font-size: 11.5px;
   padding: 2px 9px;
@@ -604,6 +605,25 @@ html[data-theme="dark"] .sub-detail pre { background: #0f1115; }
 .res-status.passed { color: var(--green); background: var(--green-bg); }
 .res-status.failed, .res-status.error, .res-status.timeout { color: var(--red); background: var(--red-bg); }
 .res-time { margin-left: auto; color: var(--text-3); font-size: 11.5px; }
+
+.collapse-btn {
+  margin-left: auto;
+  align-self: center;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  padding: 5px 8px;
+}
+.collapse-btn:hover { color: var(--text); background: var(--panel); }
+
+#paneRight.console-collapsed .console-pane { flex: 0 0 auto !important; }
+#paneRight.console-collapsed .console-pane .pane-body { display: none; }
+#paneRight.console-collapsed .editor-pane { flex: 1 1 auto !important; }
+#paneRight.console-collapsed #gutterH { display: none; }
 
 /* ================================================================ action bar */
 .action-bar {

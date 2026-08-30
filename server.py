@@ -128,6 +128,8 @@ class Handler(BaseHTTPRequestHandler):
                         problem, statuses.get(slug, "todo"), state["starred"]
                     )
                 )
+            # curriculum order, not alphabetical
+            items.sort(key=lambda item: (item["order"], item["title"]))
             return self._json({"problems": items, "stats": store.stats()})
 
         match = re.fullmatch(r"/api/problems/([A-Za-z0-9._-]+)", path)

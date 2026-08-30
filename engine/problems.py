@@ -46,6 +46,7 @@ def load(slug):
 def summary(problem, status="todo", starred=False):
     return {
         "slug": problem["slug"],
+        "order": problem.get("order", 9999),
         "title": problem.get("title", problem["slug"]),
         "difficulty": problem.get("difficulty", "Unknown"),
         "topics": problem.get("topics", []),

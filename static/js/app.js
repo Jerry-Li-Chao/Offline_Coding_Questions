@@ -496,6 +496,7 @@
     catch (err) { return toast(err.message); }
 
     busy(true, 'run');
+    setConsoleCollapsed(false);
     activateTab($('consoleTabs'), 'result');
     $('resultBody').innerHTML = '<p class="empty">Running…</p>';
 
@@ -513,6 +514,7 @@
 
   function submitSolution() {
     busy(true, 'submit');
+    setConsoleCollapsed(false);
     activateTab($('consoleTabs'), 'result');
     $('resultBody').innerHTML = '<p class="empty">Judging against all ' +
       state.problem.totalTests + ' tests…</p>';
@@ -788,9 +790,30 @@
     [['leftTabs', 'tab'], ['consoleTabs', 'console']].forEach(function (pair) {
       const container = $(pair[0]);
       container.querySelectorAll('.tab').forEach(function (btn) {
-        btn.onclick = function () { activateTab(container, btn.dataset[pair[1]]); };
+        btn.onclick = function () {
+          // Clicking a tab in a collapsed console reopens it.
+          if (container.id === 'consoleTabs') setConsoleCollapsed(false);
+          activateTab(container, btn.dataset[pair[1]]);
+        };
       });
     });
+  }
+
+  /* ------------------------------------------------------- console collapse */
+
+  function setConsoleCollapsed(collapsed) {
+    $('paneRight').classList.toggle('console-collapsed', collapsed);
+    const btn = $('consoleToggle');
+    btn.innerHTML = collapsed ? '&#9652;' : '&#9662;';
+    btn.title = collapsed ? 'Expand the console' : 'Collapse the console';
+    localStorage.setItem('ocq-console-collapsed', collapsed ? '1' : '0');
+  }
+
+  function initConsoleToggle() {
+    setConsoleCollapsed(localStorage.getItem('ocq-console-collapsed') === '1');
+    $('consoleToggle').onclick = function () {
+      setConsoleCollapsed(!$('paneRight').classList.contains('console-collapsed'));
+    };
   }
 
   /* -------------------------------------------------------------- splitters */
@@ -844,6 +867,7 @@
 
   initTheme();
   initTabs();
+  initConsoleToggle();
   initSplitters();
   $('homeBtn').onclick = function () { go('/'); };
   route();

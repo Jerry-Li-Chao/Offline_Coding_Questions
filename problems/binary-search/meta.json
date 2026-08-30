@@ -1,5 +1,6 @@
 {
   "slug": "binary-search",
+  "order": 1,
   "title": "Binary Search",
   "difficulty": "Easy",
   "topics": [

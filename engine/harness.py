@@ -148,16 +148,20 @@ def main():
         return
 
     # --- resolve the entry point ---------------------------------------------
+    # "design" problems replay a list of constructor/method calls against one
+    # instance; everything else calls a single function or method per test.
+    kind = entry.get("type", "method")
+    cls_name = entry.get("class")
+    method_name = entry.get("method")
     try:
-        cls_name, method_name = entry.get("class"), entry["method"]
-        if cls_name:
+        if kind == "design":
             if cls_name not in scope:
                 raise NameError("class %s is not defined" % cls_name)
-            target_cls = scope[cls_name]
-            if not hasattr(target_cls, method_name):
-                raise NameError(
-                    "%s has no method %s()" % (cls_name, method_name)
-                )
+        elif cls_name:
+            if cls_name not in scope:
+                raise NameError("class %s is not defined" % cls_name)
+            if not hasattr(scope[cls_name], method_name):
+                raise NameError("%s has no method %s()" % (cls_name, method_name))
         else:
             if method_name not in scope:
                 raise NameError("function %s() is not defined" % method_name)
@@ -166,6 +170,31 @@ def main():
         result["error"] = "%s: %s" % (type(exc).__name__, exc)
         flush()
         return
+
+    def call_design(commands, call_args):
+        """Replay ["ClassName", "method", ...] against one live instance."""
+        instance = None
+        returned = []
+        for step, command in enumerate(commands):
+            step_args = list(call_args[step]) if step < len(call_args) else []
+            if instance is None and command == cls_name:
+                instance = scope[cls_name](*step_args)
+                returned.append(None)
+                continue
+            if instance is None:
+                raise RuntimeError(
+                    "the first command must construct %s()" % cls_name)
+            if not hasattr(instance, command):
+                raise NameError("%s has no method %s()" % (cls_name, command))
+            returned.append(getattr(instance, command)(*step_args))
+        return returned
+
+    def invoke(call_args):
+        if kind == "design":
+            return call_design(call_args[0], call_args[1])
+        callee = (getattr(scope[cls_name](), method_name) if cls_name
+                  else scope[method_name])
+        return callee(*call_args)
 
     # --- run the tests --------------------------------------------------------
     started = time.perf_counter()
@@ -201,12 +230,7 @@ def main():
         t0 = time.perf_counter()
         try:
             with redirect_stdout(out), redirect_stderr(out):
-                callee = (
-                    getattr(scope[cls_name](), method_name)
-                    if cls_name
-                    else scope[method_name]
-                )
-                returned = callee(*args)
+                returned = invoke(args)
             entry_row["runtime_ms"] = round((time.perf_counter() - t0) * 1000, 3)
             entry_row["output"] = jsonable(returned)
             if not test.get("check", True):

@@ -39,6 +39,7 @@ python3 server.py --port 9000 --no-browser
 | **Run** | Executes the visible test cases |
 | **Submit** | Runs the full suite and records the verdict in your history |
 | **Progress** | Solved / attempted status per problem, plus starring |
+| **Layout** | Draggable split panes; the bottom console collapses with the chevron in its tab bar |
 
 Keyboard: `⌘↩` run, `⇧⌘↩` submit (`Ctrl` on Windows/Linux).
 
@@ -111,8 +112,48 @@ Comparison modes:
 Per-test `"compare"` overrides the problem-level setting, and `"check": false`
 runs a test for its output only, without a verdict.
 
+Add `"order": <n>` to control where the problem appears in the list; without it
+the problem sorts to the end.
+
 Restart the server (or just reload the page — problems are read from disk on
 every request) to pick up new problems.
+
+### Design problems
+
+For "implement this class" problems, use a `design` entry point. The tests
+replay a list of calls against one instance, LeetCode-style:
+
+```jsonc
+{
+  "entry": { "type": "design", "class": "TimeMap" },
+  "params": [
+    { "name": "commands", "type": "string[]" },
+    { "name": "inputs", "type": "any[][]" }
+  ],
+  "tests": [{
+    "input": {
+      "commands": ["TimeMap", "set", "get"],
+      "inputs": [[], ["alice", "happy", 1], ["alice", 1]]
+    },
+    "output": [null, null, "happy"]
+  }]
+}
+```
+
+The first command constructs the class and contributes `null` to the output;
+each later command calls that method and appends its return value.
+
+### Checking your work
+
+```bash
+python3 tools/verify.py            # every problem
+python3 tools/verify.py <slug>     # just one
+```
+
+This runs each ```python block in `solution.md` against the problem's own test
+suite, and confirms the starter stub *fails* — a suite the stub passes isn't
+testing anything. Approaches that are meant to be too slow (a brute force kept
+for teaching) are listed in `EXPECTED_TIMEOUT` at the top of the script.
 
 ## How it runs your code
 
@@ -142,12 +183,24 @@ engine/
 ├── problems.py        loads problems from disk
 └── store.py           SQLite: drafts, notes, cases, submissions
 problems/<slug>/       problem content
+tools/verify.py        runs every editorial against its own tests
 static/                the UI (vanilla JS, no build step, no dependencies)
 data/app.db            your local progress (gitignored)
 ```
 
 ## Problems included
 
-| Problem | Difficulty | Topic |
-| --- | --- | --- |
-| Binary Search | Easy | Binary Search |
+The full NeetCode 150 **Binary Search** section, in curriculum order:
+
+| # | Problem | Difficulty | Tests |
+| --- | --- | --- | --- |
+| 1 | Binary Search | Easy | 20 |
+| 2 | Search a 2D Matrix | Medium | 25 |
+| 3 | Koko Eating Bananas | Medium | 19 |
+| 4 | Find Minimum in Rotated Sorted Array | Medium | 20 |
+| 5 | Search in Rotated Sorted Array | Medium | 35 |
+| 6 | Time Based Key-Value Store | Medium | 9 |
+| 7 | Median of Two Sorted Arrays | Hard | 24 |
+
+Every editorial in every problem is executed against that problem's own test
+suite by `tools/verify.py`, so the published solutions are known to pass.

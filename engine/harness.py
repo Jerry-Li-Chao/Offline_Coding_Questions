@@ -203,6 +203,7 @@ def main():
             "index": index,
             "status": "running",
             "checked": bool(test.get("check", True)),
+            "compare": test.get("compare", compare_mode),
             "expected": jsonable(test.get("output")),
             "input": None,
             "stdout": "",

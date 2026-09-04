@@ -1,0 +1,268 @@
+{
+  "slug": "word-break",
+  "order": 17,
+  "title": "Word Break",
+  "difficulty": "Medium",
+  "topics": [
+    "1-D DP"
+  ],
+  "section": "1-D DP",
+  "source": "LeetCode 139 / NeetCode 150",
+  "entry": {
+    "class": "Solution",
+    "method": "wordBreak"
+  },
+  "params": [
+    {
+      "name": "s",
+      "type": "string"
+    },
+    {
+      "name": "wordDict",
+      "type": "string[]"
+    }
+  ],
+  "returns": {
+    "type": "bool"
+  },
+  "compare": "exact",
+  "timeout_sec": 10,
+  "languages": {
+    "python": {
+      "starter_file": "starter.py",
+      "prelude": "from typing import List, Optional, Dict, Set, Tuple\nimport collections, heapq, bisect, math, itertools, functools, re, string, random\nfrom collections import defaultdict, deque, Counter, OrderedDict\n"
+    }
+  },
+  "tests": [
+    {
+      "input": {
+        "s": "neetcode",
+        "wordDict": [
+          "neet",
+          "code"
+        ]
+      },
+      "output": true,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "applepenapple",
+        "wordDict": [
+          "apple",
+          "pen",
+          "ape"
+        ]
+      },
+      "output": true,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "catsincars",
+        "wordDict": [
+          "cats",
+          "cat",
+          "sin",
+          "in",
+          "car"
+        ]
+      },
+      "output": false,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "leetcode",
+        "wordDict": [
+          "leet",
+          "code"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "a",
+        "wordDict": [
+          "a"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "a",
+        "wordDict": [
+          "b"
+        ]
+      },
+      "output": false
+    },
+    {
+      "input": {
+        "s": "aaaa",
+        "wordDict": [
+          "a",
+          "aa"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "cars",
+        "wordDict": [
+          "car",
+          "ca",
+          "rs"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "bb",
+        "wordDict": [
+          "a",
+          "b",
+          "bbb",
+          "bbbb"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "abcd",
+        "wordDict": [
+          "a",
+          "abc",
+          "b",
+          "cd"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "goalspecial",
+        "wordDict": [
+          "go",
+          "goal",
+          "goals",
+          "special"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "aaaaaaa",
+        "wordDict": [
+          "aaaa",
+          "aaa"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "catsandog",
+        "wordDict": [
+          "cats",
+          "dog",
+          "sand",
+          "and",
+          "cat"
+        ]
+      },
+      "output": false
+    },
+    {
+      "input": {
+        "s": "pineapplepenapple",
+        "wordDict": [
+          "apple",
+          "pen",
+          "applepen",
+          "pine",
+          "pineapple"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+        "wordDict": [
+          "a",
+          "aa",
+          "aaa",
+          "aaaa",
+          "aaaaa",
+          "aaaaaa",
+          "aaaaaaa"
+        ]
+      },
+      "output": false
+    },
+    {
+      "input": {
+        "s": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "wordDict": [
+          "a",
+          "aa",
+          "aaa"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab",
+        "wordDict": [
+          "ab",
+          "abab",
+          "ba"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "cbbabbcbccaaabbbcacaacccacabbccacbcbaaacabbacaacbbacbcacccbacbabacbbbabcccbaaabcbcacabcbaccabaaabcacbccbcabbcbabcaabacaa",
+        "wordDict": [
+          "a",
+          "b",
+          "c",
+          "ab",
+          "bc",
+          "ca"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "zzz",
+        "wordDict": [
+          "z"
+        ]
+      },
+      "output": true
+    },
+    {
+      "input": {
+        "s": "abcdefghij",
+        "wordDict": [
+          "abc",
+          "def",
+          "ghij",
+          "xyz"
+        ]
+      },
+      "output": true
+    }
+  ]
+}

@@ -16,12 +16,52 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from engine import problems, runner  # noqa: E402
 
-# Editorial approaches that are *supposed* to be too slow for the hidden tests.
-# Keeping them documented is deliberate: seeing the brute force time out is part
-# of the lesson.
-EXPECTED_TIMEOUT = {
-    ("eating-bananas", "1. Brute Force"),
+# Editorial approaches that are *supposed* to fail the hidden suite, and why.
+# Keeping them published is deliberate — seeing the naive version blow up is
+# part of the lesson, and each editorial says so in the text.
+KNOWN_LIMITATIONS = {
+    # exponential brute force / plain recursion vs. the large hidden inputs
+    ("eating-bananas", "1. Brute Force"): "timeout",
+    ("min-cost-climbing-stairs", "1. Recursion"): "timeout",
+    ("house-robber", "1. Recursion"): "timeout",
+    ("decode-ways", "1. Recursion"): "timeout",
+    ("coin-change", "1. Recursion"): "timeout",
+    ("word-break", "1. Recursion"): "timeout",
+    ("longest-increasing-subsequence", "1. Recursion"): "timeout",
+    ("partition-equal-subset-sum", "1. Recursion"): "timeout",
+    # correct and fast, but recurses `amount` deep — past CPython's 1000 frames
+    ("coin-change", "2. Memoization (Top-Down)"): "runtime_error",
 }
+
+
+def extract_blocks(markdown):
+    """Pair every ```python block with the heading it actually sits under.
+
+    Counting blocks and headings separately gets this wrong the moment a
+    section has no code (a prose intro) or more than one snippet.
+    """
+    blocks = []
+    heading = "(untitled)"
+    seen = {}
+    lines = markdown.split("\n")
+    i = 0
+    while i < len(lines):
+        match = re.match(r"^#{2,3}\s+(.*\S)\s*$", lines[i])
+        if match:
+            heading = match.group(1)
+            i += 1
+            continue
+        if re.match(r"^```python\s*$", lines[i]):
+            i += 1
+            body = []
+            while i < len(lines) and not re.match(r"^```\s*$", lines[i]):
+                body.append(lines[i])
+                i += 1
+            seen[heading] = seen.get(heading, 0) + 1
+            name = heading if seen[heading] == 1 else "%s [%d]" % (heading, seen[heading])
+            blocks.append((name, "\n".join(body)))
+        i += 1
+    return blocks
 
 
 def check(slug):
@@ -30,20 +70,17 @@ def check(slug):
         print("unknown problem: %s" % slug)
         return 1
 
-    blocks = re.findall(r"```python\n(.*?)```", problem["solution"], re.S)
-    headings = re.findall(r"^## (.+)$", problem["solution"], re.M)
+    blocks = extract_blocks(problem["solution"])
     print("\n%s — %d tests, %d editorial solution(s)"
           % (problem["title"], len(problem["tests"]), len(blocks)))
 
     failures = 0
-    for i, code in enumerate(blocks):
-        name = headings[i] if i < len(headings) else "block %d" % (i + 1)
+    for name, code in blocks:
         verdict = runner.run_tests(code, problem, problem["tests"])
-        expected_slow = (slug, name) in EXPECTED_TIMEOUT
-        ok = (verdict["status"] == "accepted"
-              or (expected_slow and verdict["status"] == "timeout"))
+        allowed = KNOWN_LIMITATIONS.get((slug, name))
+        ok = verdict["status"] == "accepted" or verdict["status"] == allowed
 
-        note = " (expected)" if expected_slow and verdict["status"] == "timeout" else ""
+        note = " (expected)" if allowed and verdict["status"] == allowed else ""
         print("  %-4s %-44s %-21s %s/%s%s"
               % ("ok" if ok else "FAIL", name[:44], verdict["label"],
                  verdict["passed"], verdict["total"], note))

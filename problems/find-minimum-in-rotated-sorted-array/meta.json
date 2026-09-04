@@ -6,6 +6,7 @@
   "topics": [
     "Binary Search"
   ],
+  "section": "Binary Search",
   "source": "LeetCode 153 / NeetCode 150",
   "entry": {
     "class": "Solution",

@@ -113,7 +113,8 @@ Per-test `"compare"` overrides the problem-level setting, and `"check": false`
 runs a test for its output only, without a verdict.
 
 Add `"order": <n>` to control where the problem appears in the list; without it
-the problem sorts to the end.
+the problem sorts to the end. Add `"section": "<name>"` to group it under a
+heading in the list view (it falls back to the first entry in `topics`).
 
 Restart the server (or just reload the page — problems are read from disk on
 every request) to pick up new problems.
@@ -152,8 +153,12 @@ python3 tools/verify.py <slug>     # just one
 
 This runs each ```python block in `solution.md` against the problem's own test
 suite, and confirms the starter stub *fails* — a suite the stub passes isn't
-testing anything. Approaches that are meant to be too slow (a brute force kept
-for teaching) are listed in `EXPECTED_TIMEOUT` at the top of the script.
+testing anything. Each block is labelled with the heading it actually sits under,
+so sections with no code or several snippets still report accurately.
+
+Approaches that are expected to fail (a brute force kept for teaching, or a
+top-down solution that exceeds Python's recursion depth) are listed with the
+status they may return in `KNOWN_LIMITATIONS` at the top of the script.
 
 ## How it runs your code
 
@@ -190,7 +195,10 @@ data/app.db            your local progress (gitignored)
 
 ## Problems included
 
-The full NeetCode 150 **Binary Search** section, in curriculum order:
+19 problems across two NeetCode 150 sections, in curriculum order. The list view
+groups them by section and tracks solved counts per section.
+
+### Binary Search
 
 | # | Problem | Difficulty | Tests |
 | --- | --- | --- | --- |
@@ -202,5 +210,30 @@ The full NeetCode 150 **Binary Search** section, in curriculum order:
 | 6 | Time Based Key-Value Store | Medium | 9 |
 | 7 | Median of Two Sorted Arrays | Hard | 24 |
 
+### 1-D DP
+
+| # | Problem | Difficulty | Tests |
+| --- | --- | --- | --- |
+| 8 | Climbing Stairs | Easy | 15 |
+| 9 | Min Cost Climbing Stairs | Easy | 16 |
+| 10 | House Robber | Medium | 18 |
+| 11 | House Robber II | Medium | 17 |
+| 12 | Longest Palindromic Substring | Medium | 21 |
+| 13 | Palindromic Substrings | Medium | 16 |
+| 14 | Decode Ways | Medium | 27 |
+| 15 | Coin Change | Medium | 20 |
+| 16 | Maximum Product Subarray | Medium | 20 |
+| 17 | Word Break | Medium | 20 |
+| 18 | Longest Increasing Subsequence | Medium | 20 |
+| 19 | Partition Equal Subset Sum | Medium | 21 |
+
+The DP editorials deliberately walk the same four steps every time — recursion,
+memoize, flip bottom-up, shrink the state — so the pattern becomes the thing you
+learn rather than twelve unrelated tricks.
+
 Every editorial in every problem is executed against that problem's own test
-suite by `tools/verify.py`, so the published solutions are known to pass.
+suite by `tools/verify.py`, so the published solutions are known to pass. A few
+naive approaches are published *because* they fail (an exponential recursion, or
+a top-down solution that exceeds Python's recursion depth); those are listed with
+their reasons in `KNOWN_LIMITATIONS` in the script, and each editorial says so in
+the text.

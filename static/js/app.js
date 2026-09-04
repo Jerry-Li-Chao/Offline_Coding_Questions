@@ -108,11 +108,32 @@
     body.innerHTML = '';
     const needle = query.trim().toLowerCase();
 
+    let currentSection = null;
+
     allProblems.filter(function (p) {
       return !needle ||
         p.title.toLowerCase().indexOf(needle) !== -1 ||
-        p.topics.join(' ').toLowerCase().indexOf(needle) !== -1;
+        p.topics.join(' ').toLowerCase().indexOf(needle) !== -1 ||
+        (p.section || '').toLowerCase().indexOf(needle) !== -1;
     }).forEach(function (p) {
+      // one header row per section, in the order the sections first appear
+      if (p.section && p.section !== currentSection) {
+        currentSection = p.section;
+        const head = el('tr', 'section-row');
+        const cell = el('td');
+        cell.colSpan = 5;
+        cell.appendChild(el('span', 'section-name', p.section));
+        const solved = allProblems.filter(function (q) {
+          return q.section === p.section && q.status === 'solved';
+        }).length;
+        const total = allProblems.filter(function (q) {
+          return q.section === p.section;
+        }).length;
+        cell.appendChild(el('span', 'section-count', solved + ' / ' + total));
+        head.appendChild(cell);
+        body.appendChild(head);
+      }
+
       const tr = el('tr');
       tr.onclick = function () { go('/problems/' + p.slug); };
 
@@ -657,7 +678,11 @@
     if (row.status !== 'error' && row.status !== 'timeout') {
       card.appendChild(ioBlock('Output', pretty(row.output),
         row.status === 'passed' ? 'ok' : (row.checked ? 'bad' : null)));
-      if (row.checked) card.appendChild(ioBlock('Expected', pretty(row.expected)));
+      if (row.checked) {
+        card.appendChild(ioBlock(
+          row.compare === 'any_of' ? 'Expected (any of these)' : 'Expected',
+          pretty(row.expected)));
+      }
     }
 
     if (row.error) card.appendChild(ioBlock('Error', row.error, 'err'));

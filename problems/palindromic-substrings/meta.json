@@ -1,0 +1,133 @@
+{
+  "slug": "palindromic-substrings",
+  "order": 13,
+  "title": "Palindromic Substrings",
+  "difficulty": "Medium",
+  "topics": [
+    "1-D DP"
+  ],
+  "section": "1-D DP",
+  "source": "LeetCode 647 / NeetCode 150",
+  "entry": {
+    "class": "Solution",
+    "method": "countSubstrings"
+  },
+  "params": [
+    {
+      "name": "s",
+      "type": "string"
+    }
+  ],
+  "returns": {
+    "type": "int"
+  },
+  "compare": "exact",
+  "timeout_sec": 10,
+  "languages": {
+    "python": {
+      "starter_file": "starter.py",
+      "prelude": "from typing import List, Optional, Dict, Set, Tuple\nimport collections, heapq, bisect, math, itertools, functools, re, string, random\nfrom collections import defaultdict, deque, Counter, OrderedDict\n"
+    }
+  },
+  "tests": [
+    {
+      "input": {
+        "s": "abc"
+      },
+      "output": 3,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "aaa"
+      },
+      "output": 6,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "a"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "ab"
+      },
+      "output": 2
+    },
+    {
+      "input": {
+        "s": "aba"
+      },
+      "output": 4
+    },
+    {
+      "input": {
+        "s": "racecar"
+      },
+      "output": 10,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "aaaaa"
+      },
+      "output": 15
+    },
+    {
+      "input": {
+        "s": "abccba"
+      },
+      "output": 9
+    },
+    {
+      "input": {
+        "s": "zzzzzzzzzz"
+      },
+      "output": 55
+    },
+    {
+      "input": {
+        "s": "abcdefghij"
+      },
+      "output": 10
+    },
+    {
+      "input": {
+        "s": "aabaa"
+      },
+      "output": 9
+    },
+    {
+      "input": {
+        "s": "banana"
+      },
+      "output": 10
+    },
+    {
+      "input": {
+        "s": "aaaabbbbbaaabbabbbabbbaaababbbabbaababababababbbbabbbbbabbbaaaabbabbbbbabbaaabbb"
+      },
+      "output": 242
+    },
+    {
+      "input": {
+        "s": "abaadeceadddccaedebceccdbcbcacdbeadecdbcadcabbbddceaaaceedcbbbbdceeebaaaddeeacedbdbdbeaeddeaedcceaadaeeccebceccbecdbeccdcaaabceeabcbaacaceceabcdecabddecdddaabbdbdeaedecceeccbddcddedbdbeddaccaedebadacbeeeacbadaecdabecaccaabceeaaebbdceebeeadadeeacecabaabcacedcccaebbdacadccebeaaedbcaadeaddcdaadeeeabcee"
+      },
+      "output": 442
+    },
+    {
+      "input": {
+        "s": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": 500500
+    },
+    {
+      "input": {
+        "s": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+      },
+      "output": 250500
+    }
+  ]
+}

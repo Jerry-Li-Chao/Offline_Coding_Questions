@@ -6,6 +6,7 @@
   "topics": [
     "Binary Search"
   ],
+  "section": "Binary Search",
   "source": "LeetCode 875 / NeetCode 150",
   "entry": {
     "class": "Solution",

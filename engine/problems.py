@@ -47,6 +47,7 @@ def summary(problem, status="todo", starred=False):
     return {
         "slug": problem["slug"],
         "order": problem.get("order", 9999),
+        "section": problem.get("section") or (problem.get("topics") or ["Other"])[0],
         "title": problem.get("title", problem["slug"]),
         "difficulty": problem.get("difficulty", "Unknown"),
         "topics": problem.get("topics", []),

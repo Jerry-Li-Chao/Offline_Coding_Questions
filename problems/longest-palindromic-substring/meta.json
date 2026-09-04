@@ -1,0 +1,216 @@
+{
+  "slug": "longest-palindromic-substring",
+  "order": 12,
+  "title": "Longest Palindromic Substring",
+  "difficulty": "Medium",
+  "topics": [
+    "1-D DP"
+  ],
+  "section": "1-D DP",
+  "source": "LeetCode 5 / NeetCode 150",
+  "entry": {
+    "class": "Solution",
+    "method": "longestPalindrome"
+  },
+  "params": [
+    {
+      "name": "s",
+      "type": "string"
+    }
+  ],
+  "returns": {
+    "type": "string"
+  },
+  "compare": "any_of",
+  "timeout_sec": 10,
+  "languages": {
+    "python": {
+      "starter_file": "starter.py",
+      "prelude": "from typing import List, Optional, Dict, Set, Tuple\nimport collections, heapq, bisect, math, itertools, functools, re, string, random\nfrom collections import defaultdict, deque, Counter, OrderedDict\n"
+    }
+  },
+  "tests": [
+    {
+      "input": {
+        "s": "abccbaz"
+      },
+      "output": [
+        "abccba"
+      ],
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "aaaa"
+      },
+      "output": [
+        "aaaa"
+      ],
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "a"
+      },
+      "output": [
+        "a"
+      ]
+    },
+    {
+      "input": {
+        "s": "ab"
+      },
+      "output": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": {
+        "s": "aba"
+      },
+      "output": [
+        "aba"
+      ]
+    },
+    {
+      "input": {
+        "s": "abb"
+      },
+      "output": [
+        "bb"
+      ]
+    },
+    {
+      "input": {
+        "s": "racecar"
+      },
+      "output": [
+        "racecar"
+      ]
+    },
+    {
+      "input": {
+        "s": "abacdfgdcaba"
+      },
+      "output": [
+        "aba"
+      ]
+    },
+    {
+      "input": {
+        "s": "cbbd"
+      },
+      "output": [
+        "bb"
+      ],
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "bananas"
+      },
+      "output": [
+        "anana"
+      ]
+    },
+    {
+      "input": {
+        "s": "forgeeksskeegfor"
+      },
+      "output": [
+        "geeksskeeg"
+      ]
+    },
+    {
+      "input": {
+        "s": "abcda"
+      },
+      "output": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
+    },
+    {
+      "input": {
+        "s": "zzzzzzzz"
+      },
+      "output": [
+        "zzzzzzzz"
+      ]
+    },
+    {
+      "input": {
+        "s": "abcdefg"
+      },
+      "output": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g"
+      ]
+    },
+    {
+      "input": {
+        "s": "aacabdkacaa"
+      },
+      "output": [
+        "aca"
+      ]
+    },
+    {
+      "input": {
+        "s": "xyzzyx"
+      },
+      "output": [
+        "xyzzyx"
+      ]
+    },
+    {
+      "input": {
+        "s": "aaabaaaa"
+      },
+      "output": [
+        "aaabaaa"
+      ]
+    },
+    {
+      "input": {
+        "s": "babbbabbabaabbababbabaababbabaaaaaabaabaaaabbababbabaabaaaaa"
+      },
+      "output": [
+        "ababbabaababbaba"
+      ]
+    },
+    {
+      "input": {
+        "s": "bbabcccbcacaccaacaacaccccaabacaaaaaaaabcaabccbcbaabacaaccaabbcccbaabaabcccbaaabcaaaaccacaabaaaaaacbcacaaaabacbacbabcababcbcaaaabacaaccaacabcccabababcacbaaaaaaaccaaacbbcbabcbcbcbbacbabaabccacaccbaccbac"
+      },
+      "output": [
+        "bcccbaabaabcccb"
+      ]
+    },
+    {
+      "input": {
+        "s": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+      },
+      "output": [
+        "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa",
+        "bababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab"
+      ]
+    },
+    {
+      "input": {
+        "s": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "output": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ]
+    }
+  ]
+}

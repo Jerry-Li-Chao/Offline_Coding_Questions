@@ -6,6 +6,7 @@
   "topics": [
     "Binary Search"
   ],
+  "section": "Binary Search",
   "source": "LeetCode 981 / NeetCode 150",
   "entry": {
     "type": "design",

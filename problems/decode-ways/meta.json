@@ -1,0 +1,199 @@
+{
+  "slug": "decode-ways",
+  "order": 14,
+  "title": "Decode Ways",
+  "difficulty": "Medium",
+  "topics": [
+    "1-D DP"
+  ],
+  "section": "1-D DP",
+  "source": "LeetCode 91 / NeetCode 150",
+  "entry": {
+    "class": "Solution",
+    "method": "numDecodings"
+  },
+  "params": [
+    {
+      "name": "s",
+      "type": "string"
+    }
+  ],
+  "returns": {
+    "type": "int"
+  },
+  "compare": "exact",
+  "timeout_sec": 10,
+  "languages": {
+    "python": {
+      "starter_file": "starter.py",
+      "prelude": "from typing import List, Optional, Dict, Set, Tuple\nimport collections, heapq, bisect, math, itertools, functools, re, string, random\nfrom collections import defaultdict, deque, Counter, OrderedDict\n"
+    }
+  },
+  "tests": [
+    {
+      "input": {
+        "s": "12"
+      },
+      "output": 2,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "01"
+      },
+      "output": 0,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "226"
+      },
+      "output": 3,
+      "sample": true
+    },
+    {
+      "input": {
+        "s": "06"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "0"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "10"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "100"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "1000"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "101"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "27"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "26"
+      },
+      "output": 2
+    },
+    {
+      "input": {
+        "s": "20"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "2101"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "1201234"
+      },
+      "output": 3
+    },
+    {
+      "input": {
+        "s": "111111"
+      },
+      "output": 13
+    },
+    {
+      "input": {
+        "s": "11106"
+      },
+      "output": 2
+    },
+    {
+      "input": {
+        "s": "230"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "301"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "9"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "99"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "1212121212"
+      },
+      "output": 89
+    },
+    {
+      "input": {
+        "s": "111111111111111111111111111111111111111111111111111111111111"
+      },
+      "output": 2504730781961
+    },
+    {
+      "input": {
+        "s": "2222222222222222222222222222222222222222"
+      },
+      "output": 165580141
+    },
+    {
+      "input": {
+        "s": "121212121212121212121212121212121212121212121212121212121212"
+      },
+      "output": 2504730781961
+    },
+    {
+      "input": {
+        "s": "10101010101010101010101010101010101010101010101010"
+      },
+      "output": 1
+    },
+    {
+      "input": {
+        "s": "357098390427612446613500311287197457326627511495601440884305"
+      },
+      "output": 0
+    },
+    {
+      "input": {
+        "s": "11121112221111122121121211111212221211221112212211"
+      },
+      "output": 20365011074
+    }
+  ]
+}

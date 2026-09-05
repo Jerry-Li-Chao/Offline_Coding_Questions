@@ -74,15 +74,19 @@
 
         <div class="tab-panel notes-panel" data-panel="notes">
           <div class="notes-bar">
-            <div class="seg">
-              <button class="seg-btn active" data-notes="write">Write</button>
-              <button class="seg-btn" data-notes="preview">Preview</button>
-            </div>
+            <button class="cheat-toggle" id="cheatToggle"
+              aria-expanded="false">&#9656; Markdown cheatsheet</button>
             <span class="save-hint" id="notesSaved">Saved</span>
           </div>
-          <textarea id="notesInput" class="notes-input" spellcheck="true"
-            placeholder="Markdown notes — your pattern, the invariant, what you got wrong…"></textarea>
-          <div class="prose notes-preview hidden" id="notesPreview"></div>
+
+          <div class="cheatsheet hidden" id="cheatsheet"></div>
+
+          <div class="notes-split" id="notesSplit">
+            <textarea id="notesInput" class="notes-input" spellcheck="true"
+              placeholder="Markdown notes — your pattern, the invariant, what you got wrong&#8230;"></textarea>
+            <div class="gutter gutter-h" id="notesGutter" title="Drag to resize"></div>
+            <div class="prose notes-preview" id="notesPreview"></div>
+          </div>
         </div>
 
         <div class="tab-panel" data-panel="submissions">

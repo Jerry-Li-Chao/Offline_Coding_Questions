@@ -43,9 +43,20 @@ window.MD = (function () {
     let i = 0;
 
     function pushList(tag, items) {
-      html.push('<' + tag + '>' + items.map(function (t) {
-        return '<li>' + inline(t) + '</li>';
-      }).join('') + '</' + tag + '>');
+      // "- [ ] thing" / "- [x] thing" render as a checklist, GitHub-style.
+      const isTaskList = tag === 'ul' && items.every(function (t) {
+        return /^\[[ xX]\]\s/.test(t);
+      });
+
+      html.push('<' + tag + (isTaskList ? ' class="task-list"' : '') + '>' +
+        items.map(function (t) {
+          const task = isTaskList && t.match(/^\[([ xX])\]\s+([\s\S]*)$/);
+          if (!task) return '<li>' + inline(t) + '</li>';
+          const done = task[1] !== ' ';
+          return '<li class="task' + (done ? ' done' : '') + '">' +
+            '<input type="checkbox" disabled' + (done ? ' checked' : '') + '>' +
+            inline(task[2]) + '</li>';
+        }).join('') + '</' + tag + '>');
     }
 
     while (i < lines.length) {

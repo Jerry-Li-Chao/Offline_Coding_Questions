@@ -32,7 +32,7 @@ python3 server.py --port 9000 --no-browser
 | --- | --- |
 | **Description tab** | Markdown problem statement with collapsible hints |
 | **Solution tab** | Full editorial, multiple approaches, hidden behind a "show solution" guard so you attempt it first |
-| **Notes tab** | Your own markdown notes, autosaved, with a preview mode |
+| **Notes tab** | Markdown notes in a live split — you type on top, the rendered preview updates underneath as you go. Autosaved, draggable divider, built-in syntax cheatsheet |
 | **Submissions tab** | Every submission with verdict, tests passed, runtime and the exact code — reloadable into the editor |
 | **Editor** | Python syntax highlighting, line numbers, smart indent, bracket completion, comment toggle (`⌘/`), undo/redo |
 | **Test Cases** | Add, edit and delete cases inline. Leave *expected* blank to just see what your code returns |
@@ -42,6 +42,12 @@ python3 server.py --port 9000 --no-browser
 | **Layout** | Draggable split panes; the bottom console collapses with the chevron in its tab bar |
 
 Keyboard: `⌘↩` run, `⇧⌘↩` submit (`Ctrl` on Windows/Linux).
+
+Notes support headings, bold/italic/strikethrough, inline and fenced code
+(Python-highlighted), bullet/numbered lists, `- [ ]` checklists, blockquotes,
+links, tables, rules, and `<details>` collapsible sections — handy for writing a
+hint you want to re-test yourself on later. The **Markdown cheatsheet** toggle in
+the Notes tab lists all of it.
 
 ## Where your data lives
 

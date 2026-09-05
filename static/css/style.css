@@ -398,36 +398,109 @@ html[data-theme="dark"] .prose pre { background: #0f1115; }
 .guard-text { color: var(--text-2); max-width: 360px; margin: 0 auto 16px; }
 
 /* ===================================================================== notes */
-.notes-panel { display: none; flex-direction: column; }
+.notes-panel { display: none; flex-direction: column; overflow: hidden; }
 .notes-panel.active { display: flex; }
+
 .notes-bar {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  gap: 10px;
+  padding: 7px 12px;
   border-bottom: 1px solid var(--border);
+  background: var(--panel-2);
 }
-.seg { display: inline-flex; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
-.seg-btn {
-  background: none; border: 0; color: var(--text-2);
-  font: 500 12px var(--sans); padding: 4px 12px; border-radius: 6px; cursor: pointer;
-}
-.seg-btn.active { background: var(--panel); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 .save-hint { font-size: 11.5px; color: var(--text-3); }
 
-.notes-input {
+.cheat-toggle {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--text-2);
+  font: 500 12px var(--sans);
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.cheat-toggle:hover { color: var(--text); background: var(--panel); }
+.cheat-toggle.open { color: var(--text); }
+
+/* ------------------------------------------------------------- cheatsheet */
+.cheatsheet {
+  flex: 0 1 auto;
+  max-height: min(250px, 40%);
+  overflow: auto;
+  padding: 10px 14px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-sunk);
+}
+.cheat-grid {
+  display: grid;
+  grid-template-columns: minmax(140px, auto) 1fr;
+  gap: 6px 14px;
+  align-items: baseline;
+}
+.cheat-grid code {
+  justify-self: start;
+  font: 12px/1.5 var(--mono);
+  white-space: pre-wrap;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 6px;
+  color: var(--text);
+  display: inline-block;
+}
+.cheat-desc { font-size: 12.5px; color: var(--text-2); }
+.cheat-note {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+/* ------------------------------------------------- live write / preview split */
+.notes-split {
   flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.notes-input {
+  flex: 0 0 50%;
   width: 100%;
+  min-height: 72px;
   border: 0;
   resize: none;
-  padding: 16px 20px;
+  padding: 14px 20px;
   background: var(--panel);
   color: var(--text);
   font: 13px/1.7 var(--mono);
   outline: none;
 }
-.notes-preview { flex: 1 1 auto; overflow: auto; }
+.notes-preview {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  padding-top: 14px;
+}
+.notes-preview .empty-preview {
+  color: var(--text-3);
+  font-size: 12.5px;
+  font-style: italic;
+}
+.notes-split .gutter-h { flex: 0 0 6px; margin: -3px 0; z-index: 3; }
+
+/* ---------------------------------------------------------------- checklists */
+.prose ul.task-list { list-style: none; padding-left: 4px; }
+.prose li.task { display: flex; align-items: flex-start; gap: 8px; }
+.prose li.task input {
+  margin: 4px 0 0;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+.prose li.task.done { color: var(--text-3); text-decoration: line-through; }
 
 /* ============================================================== submissions */
 .subs-table { width: 100%; border-collapse: collapse; font-size: 13px; }

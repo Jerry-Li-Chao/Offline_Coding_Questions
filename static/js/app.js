@@ -271,14 +271,63 @@
     };
   }
 
+  /* ----------------------------------------------------------------- notes */
+
+  // Only syntax the renderer actually supports belongs in here.
+  const CHEATSHEET = [
+    ['# Heading', 'Heading — ## and ### for smaller'],
+    ['**bold**', 'Bold'],
+    ['*italic*', 'Italic'],
+    ['~~struck~~', 'Strikethrough'],
+    ['`code`', 'Inline code'],
+    ['```python\ncode\n```', 'Code block, syntax highlighted'],
+    ['- item', 'Bullet list'],
+    ['1. item', 'Numbered list'],
+    ['- [ ] todo\n- [x] done', 'Checklist'],
+    ['> quoted', 'Blockquote'],
+    ['[label](url)', 'Link'],
+    ['| a | b |\n| --- | --- |\n| 1 | 2 |', 'Table'],
+    ['---', 'Horizontal rule'],
+    ['<details>\n<summary>Tip title</summary>\n\nHidden until clicked.\n\n</details>',
+     'Collapsible section — good for hints you want to re-test yourself on']
+  ];
+
+  function buildCheatsheet() {
+    const host = $('cheatsheet');
+    if (host.dataset.built) return;
+
+    const note = el('p', 'cheat-note',
+      'Everything below renders live in the preview underneath.');
+    host.appendChild(note);
+
+    const grid = el('div', 'cheat-grid');
+    CHEATSHEET.forEach(function (row) {
+      const code = el('code', null, row[0]);
+      grid.appendChild(code);
+      grid.appendChild(el('div', 'cheat-desc', row[1]));
+    });
+    host.appendChild(grid);
+    host.dataset.built = '1';
+  }
+
   function renderNotes(problem) {
     const input = $('notesInput');
+    const preview = $('notesPreview');
+
+    function paint() {
+      const text = input.value;
+      preview.innerHTML = text.trim()
+        ? window.MD.render(text)
+        : '<p class="empty-preview">Preview appears here as you type.</p>';
+    }
+
     input.value = problem.state.notes || '';
     $('notesDot').classList.toggle('show', !!input.value.trim());
     $('notesSaved').textContent = input.value ? 'Saved' : '';
-    $('notesPreview').innerHTML = window.MD.render(input.value);
+    paint();
 
     input.oninput = function () {
+      paint();                                  // live, on every keystroke
       $('notesSaved').textContent = 'Saving…';
       clearTimeout(state.notesTimer);
       state.notesTimer = setTimeout(function () {
@@ -290,18 +339,34 @@
           .catch(function (err) { $('notesSaved').textContent = err.message; });
       }, 500);
     };
+  }
 
-    document.querySelectorAll('[data-notes]').forEach(function (btn) {
-      btn.onclick = function () {
-        document.querySelectorAll('[data-notes]').forEach(function (b) {
-          b.classList.toggle('active', b === btn);
-        });
-        const preview = btn.dataset.notes === 'preview';
-        if (preview) $('notesPreview').innerHTML = window.MD.render(input.value);
-        $('notesPreview').classList.toggle('hidden', !preview);
-        input.classList.toggle('hidden', preview);
-      };
-    });
+  function initNotesPane() {
+    const toggle = $('cheatToggle');
+    const sheet = $('cheatsheet');
+
+    toggle.onclick = function () {
+      const open = sheet.classList.contains('hidden');
+      if (open) buildCheatsheet();
+      sheet.classList.toggle('hidden', !open);
+      toggle.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.innerHTML = (open ? '&#9662;' : '&#9656;') + ' Markdown cheatsheet';
+      localStorage.setItem('ocq-cheatsheet', open ? '1' : '0');
+    };
+    if (localStorage.getItem('ocq-cheatsheet') === '1') toggle.onclick();
+
+    const input = $('notesInput');
+    const savedHeight = localStorage.getItem('ocq-notes-split');
+    if (savedHeight) input.style.flexBasis = savedHeight;
+
+    drag($('notesGutter'), function (e) {
+      const rect = $('notesSplit').getBoundingClientRect();
+      const pct = ((e.clientY - rect.top) / rect.height) * 100;
+      const clamped = Math.min(85, Math.max(15, pct));
+      input.style.flexBasis = clamped.toFixed(2) + '%';
+      localStorage.setItem('ocq-notes-split', clamped.toFixed(2) + '%');
+    }, 'resizing-v');
   }
 
   /* -------------------------------------------------------------- editor */
@@ -858,16 +923,16 @@
       const rect = split.getBoundingClientRect();
       const pct = ((e.clientX - rect.left) / rect.width) * 100;
       const clamped = Math.min(72, Math.max(22, pct));
-      left.style.width = clamped + '%';
-      localStorage.setItem('ocq-split-x', clamped + '%');
+      left.style.width = clamped.toFixed(2) + '%';
+      localStorage.setItem('ocq-split-x', clamped.toFixed(2) + '%');
     }, 'resizing');
 
     drag($('gutterH'), function (e) {
       const rect = rightPane.getBoundingClientRect();
       const pct = ((e.clientY - rect.top) / rect.height) * 100;
       const clamped = Math.min(85, Math.max(18, pct));
-      editorPane.style.flex = '0 0 ' + clamped + '%';
-      localStorage.setItem('ocq-split-y', clamped + '%');
+      editorPane.style.flex = '0 0 ' + clamped.toFixed(2) + '%';
+      localStorage.setItem('ocq-split-y', clamped.toFixed(2) + '%');
     }, 'resizing-v');
   }
 
@@ -892,6 +957,7 @@
 
   initTheme();
   initTabs();
+  initNotesPane();
   initConsoleToggle();
   initSplitters();
   $('homeBtn').onclick = function () { go('/'); };

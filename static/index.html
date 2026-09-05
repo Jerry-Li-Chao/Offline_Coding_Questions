@@ -18,6 +18,8 @@
   <div class="topbar-center" id="topbarCenter"></div>
 
   <div class="topbar-right">
+    <button class="icon-btn" id="backupsBtn"
+      title="Snapshots of your notes and submissions">&#9750;</button>
     <span class="conn-pill" title="This app never touches the network">offline</span>
     <button class="icon-btn" id="themeBtn" title="Toggle theme">&#9789;</button>
   </div>
@@ -43,6 +45,24 @@
       </thead>
       <tbody id="problemRows"></tbody>
     </table>
+  </div>
+</main>
+
+<!-- ------------------------------------------------------------------ backups -->
+<main id="backupsView" class="view hidden">
+  <div class="list-wrap">
+    <h1 class="list-title">Snapshots</h1>
+    <p class="list-sub" id="backupIntro"></p>
+
+    <div class="backup-actions">
+      <input type="text" id="backupLabel" maxlength="60"
+        placeholder="Label this snapshot (optional) — e.g. before reorganising notes">
+      <button class="btn btn-primary" id="createBackup">Save snapshot</button>
+      <button class="btn btn-ghost" id="exportNotes">Export notes as .md</button>
+    </div>
+
+    <p class="backup-path" id="backupPath"></p>
+    <div id="backupList"></div>
   </div>
 </main>
 

@@ -74,8 +74,15 @@
 
   function route() {
     const match = location.pathname.match(/^\/problems\/([A-Za-z0-9._-]+)/);
-    if (match) showProblem(match[1]);
-    else showList();
+    if (match) return showProblem(match[1]);
+    if (location.pathname === '/backups') return showBackups();
+    showList();
+  }
+
+  function showOnly(id) {
+    ['listView', 'problemView', 'backupsView'].forEach(function (view) {
+      $(view).classList.toggle('hidden', view !== id);
+    });
   }
 
   window.addEventListener('popstate', route);
@@ -85,8 +92,7 @@
   let allProblems = [];
 
   function showList() {
-    $('problemView').classList.add('hidden');
-    $('listView').classList.remove('hidden');
+    showOnly('listView');
     $('topbarCenter').innerHTML = '';
     document.title = 'Offline Coding Questions';
 
@@ -183,8 +189,7 @@
   /* ---------------------------------------------------------- problem view */
 
   function showProblem(slug) {
-    $('listView').classList.add('hidden');
-    $('problemView').classList.remove('hidden');
+    showOnly('problemView');
 
     api('/api/problems/' + slug).then(function (problem) {
       state.problem = problem;
@@ -863,6 +868,115 @@
     return new Date(seconds * 1000).toLocaleDateString();
   }
 
+  /* -------------------------------------------------------------- snapshots */
+
+  function showBackups() {
+    showOnly('backupsView');
+    $('topbarCenter').innerHTML = '';
+    document.title = 'Snapshots · Offline Coding Questions';
+    loadBackups();
+  }
+
+  function plural(n, word) {
+    return n + ' ' + word + (n === 1 ? '' : 's');
+  }
+
+  function loadBackups() {
+    api('/api/backups').then(function (data) {
+      const now = data.current;
+      $('backupIntro').textContent =
+        'Your notes and submission history live in one file. Right now it holds ' +
+        plural(now.notes, 'note') + ', ' + plural(now.drafts, 'code draft') +
+        ' and ' + plural(now.submissions, 'submission') + '. ' +
+        'A snapshot is saved automatically when the server starts and stops, ' +
+        'every 30 minutes while anything changes, and before any restore.';
+      $('backupPath').textContent = 'Snapshots are kept in ' + data.directory;
+      renderBackups(data.backups);
+    }).catch(function (err) { toast(err.message); });
+  }
+
+  function renderBackups(items) {
+    const host = $('backupList');
+    host.innerHTML = '';
+
+    if (!items.length) {
+      host.appendChild(el('p', 'empty', 'No snapshots yet.'));
+      return;
+    }
+
+    items.forEach(function (snap) {
+      const row = el('div', 'snap');
+
+      const main = el('div', 'snap-main');
+      const when = el('div', 'snap-when',
+        new Date(snap.created_at * 1000).toLocaleString());
+      when.appendChild(el('span', 'snap-kind ' + snap.kind, snap.kind));
+      main.appendChild(when);
+      main.appendChild(el('div', 'snap-counts',
+        plural(snap.counts.notes, 'note') + ' · ' +
+        plural(snap.counts.drafts, 'draft') + ' · ' +
+        plural(snap.counts.submissions, 'submission') + ' · ' +
+        snap.counts.solved + ' solved · ' + Math.round(snap.bytes / 1024) + ' KB'));
+      if (snap.label) main.appendChild(el('div', 'snap-label', snap.label));
+      row.appendChild(main);
+
+      const buttons = el('div', 'snap-buttons');
+
+      const restore = el('button', 'btn btn-ghost', 'Restore');
+      restore.onclick = function () {
+        const message =
+          'Replace your current data with this snapshot?\n\n' +
+          'Snapshot: ' + plural(snap.counts.notes, 'note') + ', ' +
+          plural(snap.counts.submissions, 'submission') + '\n\n' +
+          'Your current data is saved as a snapshot first, so this can be undone.';
+        if (!confirm(message)) return;
+        post('/api/backups/' + snap.name + '/restore', {}).then(function (res) {
+          toast('Restored. Previous state saved as a safety snapshot.');
+          loadBackups();
+          if (res.safety_snapshot) {
+            console.info('Undo this restore with snapshot:', res.safety_snapshot);
+          }
+        }).catch(function (err) { toast(err.message); });
+      };
+      buttons.appendChild(restore);
+
+      const download = el('a', 'btn btn-ghost', 'Download');
+      download.href = '/api/backups/' + snap.name + '/download';
+      download.setAttribute('download', snap.name + '.db');
+      buttons.appendChild(download);
+
+      const remove = el('button', 'btn btn-ghost', 'Delete');
+      remove.onclick = function () {
+        if (!confirm('Delete this snapshot permanently?')) return;
+        fetch('/api/backups/' + snap.name, { method: 'DELETE' })
+          .then(function () { toast('Snapshot deleted'); loadBackups(); });
+      };
+      buttons.appendChild(remove);
+
+      row.appendChild(buttons);
+      host.appendChild(row);
+    });
+  }
+
+  function initBackups() {
+    $('backupsBtn').onclick = function () { go('/backups'); };
+
+    $('createBackup').onclick = function () {
+      const label = $('backupLabel').value.trim();
+      post('/api/backups', { label: label }).then(function () {
+        $('backupLabel').value = '';
+        toast('Snapshot saved');
+        loadBackups();
+      }).catch(function (err) { toast(err.message); });
+    };
+
+    $('exportNotes').onclick = function () {
+      post('/api/backups/export-notes', {}).then(function (res) {
+        toast('Exported ' + plural(res.files.length, 'note') + ' to ' + res.directory);
+      }).catch(function (err) { toast(err.message); });
+    };
+  }
+
   /* ----------------------------------------------------------------- tabs */
 
   function activateTab(container, name) {
@@ -959,6 +1073,7 @@
   initTabs();
   initNotesPane();
   initConsoleToggle();
+  initBackups();
   initSplitters();
   $('homeBtn').onclick = function () { go('/'); };
   route();

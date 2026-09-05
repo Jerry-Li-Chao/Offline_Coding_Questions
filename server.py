@@ -14,19 +14,22 @@ import mimetypes
 import os
 import posixpath
 import re
+import sqlite3
 import sys
 import threading
+import time
 import urllib.parse
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from engine import problems, runner, store  # noqa: E402
+from engine import backup, problems, runner, store  # noqa: E402
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(ROOT, "static")
 MAX_BODY = 4 * 1024 * 1024
+AUTOSAVE_SECONDS = 30 * 60
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -90,17 +93,27 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_DELETE(self):
         path = urllib.parse.urlparse(self.path).path
+
         match = re.fullmatch(r"/api/submissions/(\d+)", path)
-        if not match:
-            return self._error(404, "Not found")
-        store.delete_submission(int(match.group(1)))
-        return self._json({"ok": True})
+        if match:
+            store.delete_submission(int(match.group(1)))
+            return self._json({"ok": True})
+
+        match = re.fullmatch(r"/api/backups/([A-Za-z0-9._-]+)", path)
+        if match:
+            try:
+                backup.delete(match.group(1))
+            except (ValueError, FileNotFoundError) as exc:
+                return self._error(404, str(exc))
+            return self._json({"ok": True})
+
+        return self._error(404, "Not found")
 
     # ------------------------------------------------------------------ static
     def _static(self, path):
         if path in ("/", "/index.html"):
             rel = "index.html"
-        elif re.fullmatch(r"/problems/[A-Za-z0-9._-]+", path):
+        elif re.fullmatch(r"/problems/[A-Za-z0-9._-]+", path) or path == "/backups":
             rel = "index.html"  # deep links render the SPA shell
         else:
             rel = posixpath.normpath(path).lstrip("/")
@@ -164,6 +177,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self._error(404, "Unknown submission")
             return self._json(item)
 
+        if path == "/api/backups":
+            return self._json({
+                "backups": backup.listing(),
+                "current": backup.summarize(store.DB_PATH),
+                "directory": backup.BACKUP_DIR,
+            })
+
+        match = re.fullmatch(r"/api/backups/([A-Za-z0-9._-]+)/download", path)
+        if match:
+            try:
+                target = backup.path_for(match.group(1))
+            except (ValueError, FileNotFoundError) as exc:
+                return self._error(404, str(exc))
+            with open(target, "rb") as f:
+                return self._send(
+                    200, f.read(), "application/octet-stream",
+                    {"Content-Disposition":
+                     'attachment; filename="%s.db"' % match.group(1)})
+
         return self._error(404, "Not found")
 
     # -------------------------------------------------------------- API (POST)
@@ -188,6 +220,24 @@ class Handler(BaseHTTPRequestHandler):
 
         if path == "/api/submit":
             return self._json(self._execute(body, submit=True))
+
+        if path == "/api/backups":
+            meta = backup.create(label=body.get("label"), kind="manual")
+            if not meta:
+                return self._error(400, "There is no database to snapshot yet.")
+            return self._json({"backup": meta})
+
+        match = re.fullmatch(r"/api/backups/([A-Za-z0-9._-]+)/restore", path)
+        if match:
+            try:
+                return self._json(backup.restore(match.group(1)))
+            except FileNotFoundError as exc:
+                return self._error(404, str(exc))
+            except (ValueError, sqlite3.Error) as exc:
+                return self._error(400, "Snapshot is not usable: %s" % exc)
+
+        if path == "/api/backups/export-notes":
+            return self._json(backup.export_notes())
 
         return self._error(404, "Not found")
 
@@ -219,14 +269,40 @@ class Handler(BaseHTTPRequestHandler):
         return verdict
 
 
+def start_autosave():
+    """Background thread: snapshot periodically, but only when data changed."""
+    def tick():
+        while True:
+            time.sleep(AUTOSAVE_SECONDS)
+            try:
+                backup.create(kind="auto", skip_if_unchanged=True)
+            except Exception as exc:  # a failed backup must never kill the app
+                sys.stderr.write("autosave snapshot failed: %s\n" % exc)
+
+    thread = threading.Thread(target=tick, daemon=True, name="ocq-autosave")
+    thread.start()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--port", type=int, default=8777)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--no-browser", action="store_true")
+    parser.add_argument("--no-backup", action="store_true",
+                        help="skip the automatic database snapshots")
     args = parser.parse_args()
 
     store.init_db()
+
+    # Snapshot on the way up, then every AUTOSAVE_SECONDS while anything has
+    # changed, then once more on the way down. Unchanged databases are skipped
+    # so restarts don't fill the folder with identical copies.
+    if not args.no_backup:
+        opening = backup.create(kind="auto", skip_if_unchanged=True)
+        if opening:
+            print("Snapshot saved: %s" % opening["name"])
+        start_autosave()
+
     httpd = ThreadingHTTPServer((args.host, args.port), Handler)
     url = "http://%s:%d" % (args.host, args.port)
 
@@ -237,7 +313,11 @@ def main():
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nStopped.")
+        if not args.no_backup:
+            closing = backup.create(kind="auto", skip_if_unchanged=True)
+            if closing:
+                print("\nSnapshot saved: %s" % closing["name"])
+        print("\nStopped." if args.no_backup else "Stopped.")
         httpd.server_close()
 
 

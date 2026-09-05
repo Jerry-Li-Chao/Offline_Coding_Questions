@@ -2,6 +2,9 @@
 # Delete this line if you want your progress tracked in git.
 data/
 
+# Database snapshots — your safety net. Local only, never committed.
+backups/
+
 __pycache__/
 *.pyc
 .DS_Store

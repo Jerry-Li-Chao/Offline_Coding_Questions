@@ -6,7 +6,11 @@ import sqlite3
 import time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH = os.path.join(ROOT, "data", "app.db")
+
+# OCQ_DB redirects every read and write to another file. Tests and throwaway
+# experiments MUST set it — that is what makes it impossible for them to reach
+# the real notes and submission history.
+DB_PATH = os.environ.get("OCQ_DB") or os.path.join(ROOT, "data", "app.db")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS problem_state (

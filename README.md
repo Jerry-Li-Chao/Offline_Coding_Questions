@@ -40,6 +40,7 @@ python3 server.py --port 9000 --no-browser
 | **Submit** | Runs the full suite and records the verdict in your history |
 | **Progress** | Solved / attempted status per problem, plus starring |
 | **Layout** | Draggable split panes; the bottom console collapses with the chevron in its tab bar |
+| **Snapshots** | Automatic and manual backups of your notes and history, with one-click restore |
 
 Keyboard: `⌘↩` run, `⇧⌘↩` submit (`Ctrl` on Windows/Linux).
 
@@ -58,8 +59,64 @@ Everything is in a SQLite file at `data/app.db`:
 - your custom test cases
 - full submission history with verdicts and code
 
-`data/` is gitignored so your progress stays private. Delete the file to reset;
-back it up to keep your history.
+`data/` is gitignored so your progress stays private.
+
+## Protecting your notes
+
+That one file is the only copy of work you cannot regenerate, so the app keeps
+timestamped snapshots of it in `backups/` — at the repo root, deliberately
+**outside** `data/`, so resetting the data directory cannot take the safety net
+with it. `backups/` is gitignored too.
+
+Snapshots are taken automatically:
+
+- when the server starts and when it stops
+- every 30 minutes while anything has changed
+- immediately before any restore
+
+Identical databases are skipped, so restarting the server repeatedly does not
+fill the folder with copies. The last 30 automatic and 30 safety snapshots are
+kept; **snapshots you save by hand are never pruned.**
+
+### From the app
+
+The **⌗** button in the top bar opens the Snapshots page: save a labelled
+snapshot, restore one, download it, or export every note as a `.md` file.
+Restoring snapshots your current state first, so a restore can itself be undone.
+
+### From the terminal
+
+```bash
+python3 tools/backup.py list
+python3 tools/backup.py save "before reorganising my notes"
+python3 tools/backup.py restore 20260905-113010-manual-before-reorganising-my-notes
+python3 tools/backup.py export-notes
+```
+
+These work whether or not the server is running — SQLite's backup API is safe on
+a live database, unlike a plain file copy.
+
+### Restoring by hand
+
+A snapshot is an ordinary SQLite file. If everything else fails:
+
+```bash
+cp backups/<snapshot-name>.db data/app.db
+```
+
+### Testing without risking your data
+
+`OCQ_DB` and `OCQ_BACKUPS` redirect the app to a scratch database. Anything
+experimental — including anything an AI assistant runs — should set them:
+
+```bash
+OCQ_DB=/tmp/scratch.db python3 server.py --port 8899 --no-browser
+python3 tools/test_backup.py      # asserts the redirect took effect first
+```
+
+They are read at import time, so they must be set **before** importing anything
+from `engine/`. `CLAUDE.md` states this as a rule for AI assistants working in
+the repo, along with a blanket prohibition on deleting `data/app.db`.
 
 ## Adding a problem
 
@@ -192,11 +249,15 @@ engine/
 ├── harness.py         runs in the subprocess; executes and grades
 ├── runner.py          spawns the subprocess, enforces the timeout
 ├── problems.py        loads problems from disk
+├── backup.py          database snapshots, restore, notes export
 └── store.py           SQLite: drafts, notes, cases, submissions
 problems/<slug>/       problem content
 tools/verify.py        runs every editorial against its own tests
+tools/backup.py        snapshot / restore / export from the terminal
+tools/test_backup.py   tests for the snapshot machinery (scratch DB only)
 static/                the UI (vanilla JS, no build step, no dependencies)
 data/app.db            your local progress (gitignored)
+backups/               database snapshots (gitignored)
 ```
 
 ## Problems included

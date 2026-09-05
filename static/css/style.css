@@ -241,6 +241,66 @@ body {
   white-space: nowrap;
 }
 
+/* =================================================================== backups */
+#backupsView { overflow: auto; background: var(--bg-sunk); }
+
+.backup-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+#backupLabel {
+  flex: 1 1 260px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font: 13px var(--sans);
+}
+#backupLabel:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: -1px;
+}
+.backup-path {
+  font: 11.5px var(--mono);
+  color: var(--text-3);
+  margin: 0 0 16px;
+  word-break: break-all;
+}
+
+.snap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.snap-main { flex: 1 1 260px; min-width: 0; }
+.snap-when { font-weight: 600; font-size: 13px; }
+.snap-kind {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  border-radius: 999px;
+  margin-left: 8px;
+  border: 1px solid var(--border);
+  color: var(--text-3);
+}
+.snap-kind.manual { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.snap-kind.safety { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, transparent); }
+.snap-counts { font-size: 12px; color: var(--text-2); margin-top: 3px; }
+.snap-label { font-size: 12px; color: var(--text-3); font-style: italic; margin-top: 2px; }
+.snap-buttons { display: flex; gap: 6px; }
+.snap-buttons .btn { padding: 5px 11px; font-size: 12px; }
+
 /* ===================================================================== split */
 .split { display: flex; height: 100%; min-height: 0; }
 .pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
